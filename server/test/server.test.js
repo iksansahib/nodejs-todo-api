@@ -5,12 +5,20 @@ const {app} = require('./../server.js');
 
 const {Todo} = require('./../models/todo');
 
-var id = "";
+const todos = [{
+  text: 'test1 todo'
+},{
+  text: 'test2'
+}];
+
+beforeEach((done) => {
+  Todo.remove({}).then(() => {
+    return Todo.insertMany(todos);
+  }).then(() => done());
+});
+
 
 describe('POST /todos', () => {
-  beforeEach((done) => {
-    Todo.remove({}).then(() => done());
-  });
 
   it('should not create todos with invalid data', (done) => {
     request(app)
@@ -44,8 +52,7 @@ describe('POST /todos', () => {
           return done(err);
         }
 
-        Todo.find().then((todos) => {
-          id = todos[0].id;
+        Todo.find({text}).then((todos) => {
           expect(todos.length).toBe(1);
           expect(todos[0].text).toBe(text);
           done();
@@ -56,21 +63,15 @@ describe('POST /todos', () => {
 
 describe('GET /todos', () => {
   it('should get todo', (done) => {
-    var newTodo = new Todo({text: 'from test'});
-    newTodo.save().then((doc) => {
-      id = doc._id;
-    });
 
     request(app)
       .get('/todos')
-      .send({id: id})
       .expect(200)
       .expect((res) => {
         if(res.body.status==='Not Found'){
           done('Not Found');
         }
-        console.log(res);
-        expect(res.body._id).toBe(id);
+        expect(res.body.length).toBe(2);
         done();
       })
       .end((err, result) => {
@@ -78,21 +79,5 @@ describe('GET /todos', () => {
           return done(err);
         }
      });
-  });
-
-  it('should not get todos with invalid id', (done) => {
-    request(app)
-      .get('/todos')
-      .send({})
-      .expect(400)
-      .expect((res) => {
-       expect(res.body.error).toBe('CastError');
-      })
-      .end((err, result) => {
-        if(err){
-          return done(err);
-       }
-       done();
-      });
   });
 });
