@@ -19,6 +19,20 @@ app.post('/todos', (req, res) => {
   });
 });
 
+app.get('/todos', (req, res) => {
+  Todo.find().then((doc) => {
+
+    if(doc.length === 0){
+      res.send({status: 'Not Found'});
+    }else{
+      res.send(doc);
+    }
+
+ }, (e) => {
+    res.status(400).send(e);
+  });
+});
+
 app.listen(3000, () => {
   console.log('start');
 });
