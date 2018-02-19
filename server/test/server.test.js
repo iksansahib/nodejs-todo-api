@@ -11,10 +11,14 @@ const todos = [{
   text: 'test2'
 }];
 
+var id;
 beforeEach((done) => {
   Todo.remove({}).then(() => {
     return Todo.insertMany(todos);
-  }).then(() => done());
+  }).then((todos) => {
+    id = todos[0]._id.toHexString();
+    done();
+  });
 });
 
 
@@ -45,7 +49,7 @@ describe('POST /todos', () => {
       .send({text})
       .expect(200)
       .expect((res) => {
-        expect(res.body.text).toBe(text);
+       expect(res.body.text).toBe(text);
       })
       .end((err, result) => {
         if(err){
@@ -80,4 +84,32 @@ describe('GET /todos', () => {
         }
      });
   });
+
 });
+
+  describe('GET /todos/:id', () => {
+    it('should get todo by ID', (done) => {
+
+      request(app)
+        .get(`/todos/${id}`)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body._id).toBe(id);
+        })
+        .end((err, result) => {
+          done(err);
+      });
+    });
+    it('should catch error when invalid ID or todo not exist', () => {
+      request(app)
+        .get('/todos/000')
+        .expect(400)
+        .expect((res) => {
+          expect(res.message).toInclude('message');
+        })
+        .end((err,result) => done(err));
+    });
+  });
+
+
+
