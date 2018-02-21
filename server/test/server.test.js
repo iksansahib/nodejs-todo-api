@@ -87,29 +87,75 @@ describe('GET /todos', () => {
 
 });
 
-  describe('GET /todos/:id', () => {
-    it('should get todo by ID', (done) => {
+describe('GET /todos/:id', () => {
+  it('should get todo by ID', (done) => {
 
-      request(app)
-        .get(`/todos/${id}`)
-        .expect(200)
-        .expect((res) => {
-          expect(res.body._id).toBe(id);
-        })
-        .end((err, result) => {
-          done(err);
-      });
-    });
-    it('should catch error when invalid ID or todo not exist', () => {
-      request(app)
-        .get('/todos/000')
-        .expect(400)
-        .expect((res) => {
-          expect(res.message).toInclude('message');
-        })
-        .end((err,result) => done(err));
+    request(app)
+      .get(`/todos/${id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body._id).toBe(id);
+      })
+      .end((err, result) => {
+        done(err);
     });
   });
+  it('should catch error when invalid ID or todo not exist', () => {
+    request(app)
+      .get('/todos/000')
+      .expect(400)
+      .expect((res) => {
+        expect(res.message).toInclude('message');
+      })
+      .end((err,result) => done(err));
+  });
+});
 
+describe('DELETE /todos/:id', () => {
+  it('should get todo by ID', (done) => {
 
+    request(app)
+      .delete(`/todos/${id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body._id).toBe(id);
+      })
+      .end((err, result) => {
+        done(err);
+    });
+  });
+  it('should catch error when invalid ID or todo not exist', () => {
+    request(app)
+      .delete('/todos/000')
+      .expect(400)
+      .expect((res) => {
+        expect(res.message).toInclude('message');
+      })
+      .end((err,result) => done(err));
+  });
+});
 
+describe('PATCH /todos/:id', () => {
+  it('should get todo by ID', (done) => {
+    var text = 'unit test patch';
+    request(app)
+      .patch(`/todos/${id}`)
+      .send({text})
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.text).toBe(text);
+      })
+      .end((err, result) => {
+        done(err);
+    });
+  });
+  it('should catch error when invalid ID or todo not exist', () => {
+    request(app)
+      .delete('/todos/000')
+      .expect(400)
+      .expect((res) => {
+        expect(res.message).toInclude('message');
+      })
+      .end((err,result) => done(err));
+  });
+});
