@@ -219,3 +219,29 @@ describe('POST /user', () => {
       .end(done);
   });
 });
+
+describe('POST /user/login', () => {
+
+  it('should have user/login endpoint', (done) => {
+    request(app)
+      .post('/user/login')
+      .expect((res) => {
+        expect(res.status).not.toBe(404);
+      })
+      .end(done);
+  });
+
+  it('shouldreceive email and password field', (done) => {
+    var login = {email:'iksansahib@gmail.com', password: '12345'};
+    request(app)
+      .post('/user/login')
+      .expect(200)
+      .send(login)
+      .expect((res) => {
+        expect(login).toHaveProperty('email');
+        expect(login).toHaveProperty('password');
+      })
+      .end(done);
+  });
+
+});
